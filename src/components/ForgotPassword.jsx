@@ -1,91 +1,3 @@
-// import { useState } from 'react'
-// import { Link } from 'react-router-dom'
-// import { authAPI } from '../services/api'
-// import toast from 'react-hot-toast'
-
-// const ForgotPassword = () => {
-//   const [email, setEmail] = useState('')
-//   const [loading, setLoading] = useState(false)
-//   const [sent, setSent] = useState(false)
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault()
-    
-//     if (!email) {
-//       toast.error('Email is required')
-//       return
-//     }
-
-//     setLoading(true)
-
-//     try {
-//       const response = await authAPI.forgotPassword(email)
-      
-//       if (response.success) {
-//         toast.success('Check your email for reset instructions')
-//         setSent(true)
-//       } else {
-//         toast.error(response.message)
-//       }
-//     } catch (error) {
-//       toast.error('Request failed')
-//     } finally {
-//       setLoading(false)
-//     }
-//   }
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-//       <div className="bg-white p-8 rounded-xl shadow-lg w-96">
-//         <h1 className="text-2xl font-bold text-center mb-6">Forgot Password</h1>
-        
-//         {sent ? (
-//           <div className="text-center">
-//             <div className="text-green-600 mb-4">
-//               Check your email for reset instructions
-//             </div>
-//             <Link to="/login" className="text-blue-600 hover:underline">
-//               Back to Login
-//             </Link>
-//           </div>
-//         ) : (
-//           <form onSubmit={handleSubmit} className="space-y-4">
-//             <div>
-//               <label className="block text-sm font-medium mb-1">Email</label>
-//               <input
-//                 type="email"
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//                 className="w-full p-3 border rounded-lg"
-//                 placeholder="you@example.com"
-//                 required
-//               />
-//             </div>
-            
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
-//             >
-//               {loading ? 'Sending...' : 'Send Reset Instructions'}
-//             </button>
-            
-//             <div className="text-center">
-//               <Link to="/login" className="text-blue-600 hover:underline">
-//                 Back to Login
-//               </Link>
-//             </div>
-//           </form>
-//         )}
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default ForgotPassword
-
-
-
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authAPI } from '../services/api'
@@ -104,7 +16,7 @@ const ForgotPassword = () => {
   // Step 1: Request OTP
   const handleRequestOTP = async (e) => {
     e.preventDefault()
-    
+
     if (!email) {
       toast.error('Email is required')
       return
@@ -114,12 +26,12 @@ const ForgotPassword = () => {
 
     try {
       const response = await authAPI.forgotPassword(email)
-      
+
       if (response.success) {
-        
+
         toast.success('OTP sent to your email!')
         setStep(2) // Move to OTP verification step
-        
+
         // Debug: Agar test token mila hai
         if (response.testToken) {
           console.log('🔑 OTP for testing:', response.testToken)
@@ -140,7 +52,7 @@ const ForgotPassword = () => {
   // Step 2: Verify OTP
   const handleVerifyOTP = async (e) => {
     e.preventDefault()
-    
+
     if (!otp || otp.length !== 6) {
       toast.error('Please enter 6-digit OTP')
       return
@@ -151,7 +63,7 @@ const ForgotPassword = () => {
     try {
       // Verify OTP with backend
       const response = await authAPI.verifyResetOTP(email, otp)
-      
+
       if (response.success) {
         toast.success('OTP verified!')
         setResetToken(otp) // Save the token
@@ -170,17 +82,17 @@ const ForgotPassword = () => {
   // Step 3: Reset Password
   const handleResetPassword = async (e) => {
     e.preventDefault()
-    
+
     if (!newPassword || !confirmPassword) {
       toast.error('Both password fields are required')
       return
     }
-    
+
     if (newPassword.length < 6) {
       toast.error('Password must be at least 6 characters')
       return
     }
-    
+
     if (newPassword !== confirmPassword) {
       toast.error('Passwords do not match')
       return
@@ -190,7 +102,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await authAPI.resetPassword(resetToken, newPassword)
-      
+
       if (response.success) {
         toast.success('Password reset successfully!')
         navigate('/login')
@@ -220,12 +132,7 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-xl shadow-lg w-96">
-        <h1 className="text-2xl font-bold text-center mb-6">
-          {step === 1 ? 'Forgot Password' : 
-           step === 2 ? 'Verify OTP' : 
-           'Reset Password'}
-        </h1>
-        
+
         {/* STEP 1: Enter Email */}
         {step === 1 && (
           <form onSubmit={handleRequestOTP} className="space-y-4">
@@ -243,7 +150,7 @@ const ForgotPassword = () => {
                 Enter your registered email to receive OTP
               </p>
             </div>
-            
+
             <button
               type="submit"
               disabled={loading}
@@ -251,7 +158,7 @@ const ForgotPassword = () => {
             >
               {loading ? 'Sending OTP...' : 'Send OTP'}
             </button>
-            
+
             <div className="text-center pt-4 border-t">
               <Link to="/login" className="text-blue-600 hover:underline">
                 Back to Login
@@ -259,7 +166,7 @@ const ForgotPassword = () => {
             </div>
           </form>
         )}
-        
+
         {/* STEP 2: Enter OTP */}
         {step === 2 && (
           <form onSubmit={handleVerifyOTP} className="space-y-4">
@@ -280,7 +187,7 @@ const ForgotPassword = () => {
                 Check your email for 6-digit OTP
               </p>
             </div>
-            
+
             <div className="flex gap-2">
               <button
                 type="button"
@@ -297,7 +204,7 @@ const ForgotPassword = () => {
                 {loading ? 'Verifying...' : 'Verify OTP'}
               </button>
             </div>
-            
+
             <div className="text-center">
               <button
                 type="button"
@@ -310,7 +217,7 @@ const ForgotPassword = () => {
             </div>
           </form>
         )}
-        
+
         {/* STEP 3: Set New Password */}
         {step === 3 && (
           <form onSubmit={handleResetPassword} className="space-y-4">
@@ -326,7 +233,7 @@ const ForgotPassword = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">Confirm Password</label>
               <input
@@ -338,7 +245,7 @@ const ForgotPassword = () => {
                 required
               />
             </div>
-            
+
             <div className="flex gap-2">
               <button
                 type="button"
