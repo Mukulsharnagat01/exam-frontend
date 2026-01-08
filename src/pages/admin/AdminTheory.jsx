@@ -1,288 +1,7 @@
-// import React, { useState, useEffect } from 'react';
-// import Navbar from '../../components/Navbar';
-
-// const AdminTheory = () => {
-//     const [questions, setQuestions] = useState([]);
-//     const [newQuestion, setNewQuestion] = useState('');
-
-//     // useEffect(() => {
-//     //     const stored = localStorage.getItem('theoryQuestions');
-//     //     if (stored) setQuestions(JSON.parse(stored));
-//     // }, []);
-
-//     // const saveToStorage = (updated) => {
-//     //     localStorage.setItem('theoryQuestions', JSON.stringify(updated));
-//     //     setQuestions(updated);
-//     // };
-//    useEffect(() => {
-//     fetch("http://localhost:3000/api/questions/theory", {
-//         headers: {
-//             Authorization: `Bearer ${localStorage.getItem("token")}`
-//         }
-//     })
-//     .then(res => res.json())
-//     .then(data => setQuestions(data))
-//     .catch(err => console.error(err));
-// }, []);
-
-
-
-//     const addQuestion = () => {
-//         if (newQuestion.trim()) {
-//             const updated = [...questions, { type: 'theory',  question: newQuestion }];
-//             // saveToStorage(updated);
-//             const addQuestion = async () => {
-//     if (!newQuestion.trim()) return;
-
-//     const res = await fetch("http://localhost:3000/api/questions/theory", {
-//         method: "POST",
-//         headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${localStorage.getItem("token")}`
-//         },
-//         body: JSON.stringify({
-//             question: newQuestion,
-//             type: "theory"
-//         })
-//     });
-
-//     const saved = await res.json();
-//     setQuestions(prev => [...prev, saved]);
-//     setNewQuestion('');
-// };
-
-//             setNewQuestion('');
-//         }
-//     };
-
-//     const deleteQuestion = (index) => {
-//         const updated = questions.filter((_, i) => i !== index);
-//         // saveToStorage(updated);
-//         const deleteQuestion = async (id) => {
-//     await fetch(`http://localhost:3000/api/questions/${id}`, {
-//         method: "DELETE",
-//         headers: {
-//             Authorization: `Bearer ${localStorage.getItem("token")}`
-//         }
-//     });
-
-//     setQuestions(prev => prev.filter(q => q.id !== id));
-// };
-
-//     };
-
-//     return (
-//         <div className="min-h-screen bg-gray-100">
-//             <Navbar />
-//             <div className="container mx-auto p-4">
-//                 <h1 className="text-2xl font-bold mb-4">Admin - Theory Questions</h1>
-//                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-//                     <h2 className="text-xl font-semibold mb-4">Add New Theory Question</h2>
-//                     <textarea
-//                         placeholder="Question"
-//                         value={newQuestion}
-//                         onChange={(e) => setNewQuestion(e.target.value)}
-//                         className="w-full p-2 border border-gray-300 rounded mb-4"
-//                         rows="4"
-//                     />
-//                     <button onClick={addQuestion} className="px-4 py-2 bg-blue-500 text-white rounded">
-//                         Add Question
-//                     </button>
-//                 </div>
-//                 <div className="bg-white p-6 rounded-lg shadow-md">
-//                     <h2 className="text-xl font-semibold mb-4">Existing Questions</h2>
-//                     {questions.map((q, i) => (
-//                         <div key={i} className="mb-4 p-4 border border-gray-200 rounded">
-//                             <p>{q.question}</p>
-//                             <button onClick={() => deleteQuestion(i)} className="mt-2 px-3 py-1 bg-red-500 text-white rounded">
-//                                 Delete
-//                             </button>
-//                         </div>
-//                     ))}
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default AdminTheory;
-
-
-// import React, { useState, useEffect } from 'react';
-// import Navbar from '../../components/Navbar';
-
-// const AdminTheory = () => {
-//     const [questions, setQuestions] = useState([]);
-//     const [newQuestion, setNewQuestion] = useState('');
-//     const [loading, setLoading] = useState(true);
-
-//     useEffect(() => {
-//         const fetchQuestions = async () => {
-//             try {
-//                 // ✅ Fix: Use authToken
-//                 const token = localStorage.getItem('authToken') || 
-//                               localStorage.getItem('token');
-                
-//                 const response = await fetch("http://localhost:3000/api/questions/theory", {
-//                     headers: {
-//                         'Authorization': `Bearer ${token}`,
-//                         'Content-Type': 'application/json'
-//                     }
-//                 });
-                
-//                 if (!response.ok) {
-//                     throw new Error(`Failed to fetch: ${response.status}`);
-//                 }
-                
-//                 const data = await response.json();
-                
-//                 // ✅ Handle response format
-//                 if (data.success && data.questions) {
-//                     setQuestions(data.questions);
-//                 } else if (Array.isArray(data)) {
-//                     setQuestions(data);
-//                 } else {
-//                     setQuestions([]);
-//                 }
-                
-//             } catch (err) {
-//                 console.error('Error loading questions:', err);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         };
-        
-//         fetchQuestions();
-//     }, []);
-
-//     const addQuestion = async () => {
-//         if (!newQuestion.trim()) return;
-
-//         try {
-//             const token = localStorage.getItem('authToken') || 
-//                           localStorage.getItem('token');
-            
-//             const response = await fetch("http://localhost:3000/api/questions/theory", {
-//                 method: "POST",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     'Authorization': `Bearer ${token}`
-//                 },
-//                 body: JSON.stringify({
-//                     question: newQuestion,
-//                     type: "theory"
-//                 })
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error('Failed to add question');
-//             }
-
-//             const saved = await response.json();
-//             setQuestions(prev => [...prev, saved]);
-//             setNewQuestion('');
-//             alert('Question added successfully!');
-            
-//         } catch (err) {
-//             console.error('Error adding question:', err);
-//             alert('Failed to add question');
-//         }
-//     };
-
-//     const deleteQuestion = async (id) => {
-//         if (!window.confirm('Are you sure you want to delete this question?')) return;
-        
-//         try {
-//             const token = localStorage.getItem('authToken') || 
-//                           localStorage.getItem('token');
-            
-//             const response = await fetch(`http://localhost:3000/api/questions/theory/${id}`, {
-//                 method: "DELETE",
-//                 headers: {
-//                     'Authorization': `Bearer ${token}`
-//                 }
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error('Failed to delete question');
-//             }
-
-//             setQuestions(prev => prev.filter(q => q.id !== id));
-//             alert('Question deleted successfully!');
-            
-//         } catch (err) {
-//             console.error('Error deleting question:', err);
-//             alert('Failed to delete question');
-//         }
-//     };
-
-//     if (loading) {
-//         return (
-//             <div className="min-h-screen bg-gray-100">
-//                 <Navbar />
-//                 <div className="container mx-auto p-4">
-//                     <p className="text-center py-12">Loading questions...</p>
-//                 </div>
-//             </div>
-//         );
-//     }
-
-//     return (
-//         <div className="min-h-screen bg-gray-100">
-//             <Navbar />
-//             <div className="container mx-auto p-4">
-//                 <h1 className="text-2xl font-bold mb-6">Admin - Theory Questions</h1>
-                
-//                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-//                     <h2 className="text-xl font-semibold mb-4">Add New Theory Question</h2>
-//                     <textarea
-//                         placeholder="Question"
-//                         value={newQuestion}
-//                         onChange={(e) => setNewQuestion(e.target.value)}
-//                         className="w-full p-3 border border-gray-300 rounded mb-4"
-//                         rows="4"
-//                     />
-//                     <button 
-//                         onClick={addQuestion} 
-//                         className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-//                         disabled={!newQuestion.trim()}
-//                     >
-//                         Add Question
-//                     </button>
-//                 </div>
-                
-//                 <div className="bg-white p-6 rounded-lg shadow-md">
-//                     <h2 className="text-xl font-semibold mb-4">Existing Questions ({questions.length})</h2>
-//                     {questions.length === 0 ? (
-//                         <p className="text-gray-500 text-center py-4">No questions yet</p>
-//                     ) : (
-//                         questions.map((q, i) => (
-//                             <div key={q.id || i} className="mb-4 p-4 border border-gray-200 rounded flex justify-between items-start">
-//                                 <div>
-//                                     <p className="font-medium">{q.question}</p>
-//                                     <p className="text-sm text-gray-500 mt-1">ID: {q.id || 'N/A'}</p>
-//                                 </div>
-//                                 <button 
-//                                     onClick={() => deleteQuestion(q.id)} 
-//                                     className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-//                                 >
-//                                     Delete
-//                                 </button>
-//                             </div>
-//                         ))
-//                     )}
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default AdminTheory;
-
-
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
+import api from '../../services/api'; // ← Added
+import toast from 'react-hot-toast'; // ← Added
 
 const AdminTheory = () => {
     const [subjects, setSubjects] = useState([]);
@@ -297,22 +16,9 @@ const AdminTheory = () => {
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const token = localStorage.getItem('authToken') || 
-                              localStorage.getItem('token');
-                
-                const response = await fetch("http://localhost:3000/api/subjects", {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch subjects: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
+                const response = await api.get('/subjects'); // ← Changed
+                const data = response.data;
+
                 if (Array.isArray(data)) {
                     setSubjects(data);
                 } else if (data.success && Array.isArray(data.subjects)) {
@@ -320,14 +26,14 @@ const AdminTheory = () => {
                 } else {
                     setSubjects(['mathematics', 'physics', 'chemistry']);
                 }
-                
             } catch (err) {
                 console.error('Error loading subjects:', err);
+                toast.error('Failed to load subjects');
             } finally {
                 setSubjectsLoading(false);
             }
         };
-        
+
         fetchSubjects();
     }, []);
 
@@ -343,34 +49,20 @@ const AdminTheory = () => {
     const fetchQuestions = async (subject) => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch(`http://localhost:3000/api/questions/${subject}?type=theory`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Failed to fetch: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            // Filter only theory questions
+            const response = await api.get(`/questions/${subject}?type=theory`); // ← Changed
+            const data = response.data;
+
             let questionsArray = [];
             if (Array.isArray(data)) {
                 questionsArray = data.filter(q => q.type === 'theory');
             } else if (data.success && Array.isArray(data.questions)) {
                 questionsArray = data.questions.filter(q => q.type === 'theory');
             }
-            
+
             setQuestions(questionsArray);
-            
         } catch (err) {
             console.error('Error loading questions:', err);
+            toast.error('Failed to load questions');
             setQuestions([]);
         } finally {
             setLoading(false);
@@ -385,78 +77,49 @@ const AdminTheory = () => {
 
     const addQuestion = async () => {
         if (!selectedSubject) {
-            alert('Please select a subject first');
+            toast.error('Please select a subject first');
             return;
         }
 
         if (!newQuestion.trim()) {
-            alert('Question text is required');
+            toast.error('Question text is required');
             return;
         }
 
         if (!answer.trim()) {
-            alert('Answer is required for theory question');
+            toast.error('Answer is required for theory question');
             return;
         }
 
         try {
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch("http://localhost:3000/api/questions/theory", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    subject: selectedSubject,
-                    question: newQuestion,
-                    answer: answer,
-                    type: "theory"
-                })
+            const response = await api.post('/questions/theory', { // ← Changed
+                subject: selectedSubject,
+                question: newQuestion,
+                answer: answer,
+                type: "theory"
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to add question');
-            }
-
-            const saved = await response.json();
+            const saved = response.data;
             setQuestions(prev => [...prev, saved]);
             setNewQuestion('');
             setAnswer('');
-            alert('Theory question added successfully!');
-            
+            toast.success('Theory question added successfully!');
         } catch (err) {
             console.error('Error adding question:', err);
-            alert('Failed to add question');
+            toast.error('Failed to add question');
         }
     };
 
     const deleteQuestion = async (id) => {
         if (!window.confirm('Are you sure you want to delete this question?')) return;
-        
+
         try {
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch(`http://localhost:3000/api/questions/theory/${id}`, {
-                method: "DELETE",
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete question');
-            }
-
-            setQuestions(prev => prev.filter(q => q.id !== id));
-            alert('Question deleted successfully!');
-            
+            await api.delete(`/questions/theory/${id}`); // ← Changed
+            setQuestions(questions.filter(q => q.id !== id));
+            toast.success('Question deleted successfully!');
         } catch (err) {
             console.error('Error deleting question:', err);
-            alert('Failed to delete question');
+            toast.error('Failed to delete question');
         }
     };
 
@@ -479,11 +142,11 @@ const AdminTheory = () => {
             <Navbar />
             <div className="container mx-auto p-4 max-w-6xl">
                 <h1 className="text-2xl font-bold mb-6">Admin - Theory Questions Management</h1>
-                
+
                 {/* Subject Selection Card */}
                 <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-4">Select Subject for Theory Questions</h2>
-                    
+
                     {!selectedSubject ? (
                         <div>
                             <p className="text-gray-600 mb-4">Choose a subject to add/view theory questions:</p>
@@ -525,7 +188,7 @@ const AdminTheory = () => {
                         <h2 className="text-xl font-semibold mb-4">
                             Add New Theory Question to <span className="text-purple-600 capitalize">{selectedSubject.replace(/-/g, ' ')}</span>
                         </h2>
-                        
+
                         <div className="mb-4">
                             <label className="block text-gray-700 mb-2">Question:</label>
                             <textarea
@@ -548,7 +211,7 @@ const AdminTheory = () => {
                             />
                         </div>
 
-                        <button 
+                        <button
                             onClick={addQuestion}
                             disabled={!newQuestion.trim() || !answer.trim()}
                             className="px-6 py-3 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -596,7 +259,7 @@ const AdminTheory = () => {
                                                 )}
                                                 <p className="text-sm text-gray-500 mt-2">Subject: {q.subject || selectedSubject}</p>
                                             </div>
-                                            <button 
+                                            <button
                                                 onClick={() => deleteQuestion(q.id)}
                                                 className="ml-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
                                             >

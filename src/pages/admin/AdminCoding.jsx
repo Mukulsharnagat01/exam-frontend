@@ -1,117 +1,7 @@
-// import React, { useState, useEffect } from 'react';
-// import Navbar from '../../components/Navbar';
-
-// const AdminCoding = () => {
-//     const [questions, setQuestions] = useState([]);
-//     const [newQuestion, setNewQuestion] = useState('');
-
-
-
-//     useEffect(() => {
-//     fetch("http://localhost:3000/api/questions/coding", {
-//         headers: {
-//             Authorization: `Bearer ${localStorage.getItem("token")}`
-//         }
-//     })
-//     .then(res => res.json())
-//     .then(data => setQuestions(data))
-//     .catch(err => console.error(err));
-// }, []);
-
-//     // useEffect(() => {
-//     //     const stored = localStorage.getItem('codingQuestions');
-//     //     if (stored) setQuestions(JSON.parse(stored));
-//     // }, []);
-
-//     // const saveToStorage = (updated) => {
-//     //     localStorage.setItem('codingQuestions', JSON.stringify(updated));
-//     //     setQuestions(updated);
-//     // };
-
-//     const addQuestion = () => {
-//         if (newQuestion.trim()) {
-//             const updated = [...questions, { type: 'coding', question: newQuestion }];
-//             // saveToStorage(updated);
-//             const addQuestion = async () => {
-//     if (!newQuestion.trim()) return;
-
-//     const res = await fetch("http://localhost:3000/api/questions/coding", {
-//         method: "POST",
-//         headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${localStorage.getItem("token")}`
-//         },
-//         body: JSON.stringify({
-//             question: newQuestion,
-//             type: "coding"
-//         })
-//     });
-
-//     const saved = await res.json();
-//     setQuestions(prev => [...prev, saved]);
-//     setNewQuestion('');
-// };
-
-//             setNewQuestion('');
-//         }
-//     };
-
-//     const deleteQuestion = (index) => {
-//         const updated = questions.filter((_, i) => i !== index);
-//         // saveToStorage(updated);
-//         const deleteQuestion = async (id) => {
-//     await fetch(`http://localhost:3000/api/questions/${id}`, {
-//         method: "DELETE",
-//         headers: {
-//             Authorization: `Bearer ${localStorage.getItem("token")}`
-//         }
-//     });
-
-//     setQuestions(prev => prev.filter(q => q.id !== id));
-// };
-
-//     };
-
-//     return (
-//         <div className="min-h-screen bg-gray-100">
-//             <Navbar />
-//             <div className="container mx-auto p-4">
-//                 <h1 className="text-2xl font-bold mb-4">Admin - Coding Questions</h1>
-//                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-//                     <h2 className="text-xl font-semibold mb-4">Add New Coding Question</h2>
-//                     <textarea
-//                         placeholder="Question"
-//                         value={newQuestion}
-//                         onChange={(e) => setNewQuestion(e.target.value)}
-//                         className="w-full p-2 border border-gray-300 rounded mb-4"
-//                         rows="4"
-//                     />
-//                     <button onClick={addQuestion} className="px-4 py-2 bg-blue-500 text-white rounded">
-//                         Add Question
-//                     </button>
-//                 </div>
-//                 <div className="bg-white p-6 rounded-lg shadow-md">
-//                     <h2 className="text-xl font-semibold mb-4">Existing Questions</h2>
-//                     {questions.map((q, i) => (
-//                         <div key={i} className="mb-4 p-4 border border-gray-200 rounded">
-//                             <p>{q.question}</p>
-//                             <button onClick={() => deleteQuestion(i)} className="mt-2 px-3 py-1 bg-red-500 text-white rounded">
-//                                 Delete
-//                             </button>
-//                         </div>
-//                     ))}
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default AdminCoding;
-
-
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
+import api from '../../services/api'; // ← Added for API calls
+import toast from 'react-hot-toast'; // ← Added for error notifications
 
 const AdminCoding = () => {
     const [subjects, setSubjects] = useState([]);
@@ -126,22 +16,9 @@ const AdminCoding = () => {
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const token = localStorage.getItem('authToken') || 
-                              localStorage.getItem('token');
-                
-                const response = await fetch("http://localhost:3000/api/subjects", {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch subjects: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
+                const response = await api.get('/subjects'); // ← Changed to api.get (handles prod URL)
+                const data = response.data;
+
                 if (Array.isArray(data)) {
                     setSubjects(data);
                 } else if (data.success && Array.isArray(data.subjects)) {
@@ -149,14 +26,14 @@ const AdminCoding = () => {
                 } else {
                     setSubjects(['computer-science', 'programming', 'algorithms']);
                 }
-                
             } catch (err) {
                 console.error('Error loading subjects:', err);
+                toast.error('Failed to load subjects');
             } finally {
                 setSubjectsLoading(false);
             }
         };
-        
+
         fetchSubjects();
     }, []);
 
@@ -172,34 +49,20 @@ const AdminCoding = () => {
     const fetchQuestions = async (subject) => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch(`http://localhost:3000/api/questions/${subject}?type=coding`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Failed to fetch: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            // Filter only coding questions
+            const response = await api.get(`/questions/${subject}?type=coding`); // ← Changed
+            const data = response.data;
+
             let questionsArray = [];
             if (Array.isArray(data)) {
                 questionsArray = data.filter(q => q.type === 'coding');
             } else if (data.success && Array.isArray(data.questions)) {
                 questionsArray = data.questions.filter(q => q.type === 'coding');
             }
-            
+
             setQuestions(questionsArray);
-            
         } catch (err) {
             console.error('Error loading questions:', err);
+            toast.error('Failed to load questions');
             setQuestions([]);
         } finally {
             setLoading(false);
@@ -214,73 +77,44 @@ const AdminCoding = () => {
 
     const addQuestion = async () => {
         if (!selectedSubject) {
-            alert('Please select a subject first');
+            toast.error('Please select a subject first');
             return;
         }
 
         if (!newQuestion.trim()) {
-            alert('Question text is required');
+            toast.error('Question text is required');
             return;
         }
 
         try {
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch("http://localhost:3000/api/questions/coding", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    subject: selectedSubject,
-                    question: newQuestion,
-                    testCases: testCases.filter(tc => tc.trim()),
-                    type: "coding"
-                })
+            const response = await api.post('/questions/coding', { // ← Changed
+                subject: selectedSubject,
+                question: newQuestion,
+                testCases: testCases.filter(tc => tc.trim()),
+                type: "coding"
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to add question');
-            }
-
-            const saved = await response.json();
+            const saved = response.data;
             setQuestions(prev => [...prev, saved]);
             setNewQuestion('');
             setTestCases(['', '']);
-            alert('Coding question added successfully!');
-            
+            toast.success('Coding question added successfully!');
         } catch (err) {
             console.error('Error adding question:', err);
-            alert('Failed to add question');
+            toast.error('Failed to add question');
         }
     };
 
     const deleteQuestion = async (id) => {
         if (!window.confirm('Are you sure you want to delete this question?')) return;
-        
+
         try {
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch(`http://localhost:3000/api/questions/coding/${id}`, {
-                method: "DELETE",
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete question');
-            }
-
-            setQuestions(prev => prev.filter(q => q.id !== id));
-            alert('Question deleted successfully!');
-            
+            await api.delete(`/questions/coding/${id}`); // ← Changed
+            setQuestions(questions.filter(q => q.id !== id));
+            toast.success('Question deleted successfully!');
         } catch (err) {
             console.error('Error deleting question:', err);
-            alert('Failed to delete question');
+            toast.error('Failed to delete question');
         }
     };
 
@@ -309,11 +143,11 @@ const AdminCoding = () => {
             <Navbar />
             <div className="container mx-auto p-4 max-w-6xl">
                 <h1 className="text-2xl font-bold mb-6">Admin - Coding Questions Management</h1>
-                
+
                 {/* Subject Selection Card */}
                 <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-4">Select Subject for Coding Questions</h2>
-                    
+
                     {!selectedSubject ? (
                         <div>
                             <p className="text-gray-600 mb-4">Choose a subject to add/view coding questions:</p>
@@ -355,7 +189,7 @@ const AdminCoding = () => {
                         <h2 className="text-xl font-semibold mb-4">
                             Add New Coding Question to <span className="text-orange-600 capitalize">{selectedSubject.replace(/-/g, ' ')}</span>
                         </h2>
-                        
+
                         <div className="mb-4">
                             <label className="block text-gray-700 mb-2">Problem Statement:</label>
                             <textarea
@@ -385,7 +219,7 @@ const AdminCoding = () => {
                             ))}
                         </div>
 
-                        <button 
+                        <button
                             onClick={addQuestion}
                             disabled={!newQuestion.trim()}
                             className="px-6 py-3 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -437,7 +271,7 @@ const AdminCoding = () => {
                                                 )}
                                                 <p className="text-sm text-gray-500 mt-2">Subject: {q.subject || selectedSubject}</p>
                                             </div>
-                                            <button 
+                                            <button
                                                 onClick={() => deleteQuestion(q.id)}
                                                 className="ml-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
                                             >

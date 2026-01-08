@@ -1,292 +1,7 @@
-// import React, { useState, useEffect } from 'react';
-// import Navbar from '../../components/Navbar';
-
-// const AdminMCQ = () => {
-//     const [questions, setQuestions] = useState([]);
-//     const [newQuestion, setNewQuestion] = useState('');
-//     const [options, setOptions] = useState(['', '', '', '']);
-
-//     useEffect(() => {
-//   // ✅ LOCALSTORAGE KI JAGAH BACKEND SE DATA FETCH KARO
-//   fetch(`http://localhost:3000/api/questions/mcq`)
-//     .then(res => res.json())
-//     .then(data => setQuestions(data))
-//     .catch(err => console.error('Error loading questions:', err));
-// }, []);
-
-
-//     const addQuestion = () => {
-//         if (newQuestion.trim() && options.every(opt => opt.trim())) {
-//             const updated = [...questions, { type: 'mcq',  question: newQuestion, options }];
-//            const addQuestion = async () => {
-//     const res = await fetch("http://localhost:3000/api/questions/mcq", {
-//         method: "POST",
-//         headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${localStorage.getItem("token")}`
-//         },
-//         body: JSON.stringify({
-//             question: newQuestion,
-//             options,
-//             type: "mcq"
-//         })
-//     });
-
-//     const saved = await res.json();
-//     setQuestions(prev => [...prev, saved]);
-// };
-
-//             setNewQuestion('');
-//             setOptions(['', '', '', '']);
-//         }
-//     };
-
-//     const deleteQuestion = (index) => {
-//         const updated = questions.filter((_, i) => i !== index);
-//         const deleteQuestion = async (id) => {
-//     await fetch(`http://localhost:3000/api/questions/${id}`, {
-//         method: "DELETE",
-//         headers: {
-//             Authorization: `Bearer ${localStorage.getItem("token")}`
-//         }
-//     });
-
-//     setQuestions(prev => prev.filter(q => q.id !== id));
-// };
-
-//     };
-
-//     return (
-//         <div className="min-h-screen bg-gray-100">
-//             <Navbar />
-//             <div className="container mx-auto p-4">
-//                 <h1 className="text-2xl font-bold mb-4">Admin - MCQ Questions</h1>
-//                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-//                     <h2 className="text-xl font-semibold mb-4">Add New MCQ Question</h2>
-//                     <input
-//                         placeholder="Question"
-//                         value={newQuestion}
-//                         onChange={(e) => setNewQuestion(e.target.value)}
-//                         className="w-full p-2 border border-gray-300 rounded mb-4"
-//                     />
-//                     {options.map((opt, i) => (
-//                         <input
-//                             key={i}
-//                             placeholder={`Option ${i + 1}`}
-//                             value={opt}
-//                             onChange={(e) => {
-//                                 const newOpts = [...options];
-//                                 newOpts[i] = e.target.value;
-//                                 setOptions(newOpts);
-//                             }}
-//                             className="w-full p-2 border border-gray-300 rounded mb-2"
-//                         />
-//                     ))}
-//                     <button onClick={addQuestion} className="px-4 py-2 bg-blue-500 text-white rounded">
-//                         Add Question
-//                     </button>
-//                 </div>
-//                 <div className="bg-white p-6 rounded-lg shadow-md">
-//                     <h2 className="text-xl font-semibold mb-4">Existing Questions</h2>
-//                     {questions.map((q, i) => (
-//                         <div key={i} className="mb-4 p-4 border border-gray-200 rounded">
-//                             <p className="font-semibold">{q.question}</p>
-//                             <ul className="list-disc list-inside">
-//                                 {q.options.map((opt, j) => <li key={j}>{opt}</li>)}
-//                             </ul>
-//                             <button onClick={() => deleteQuestion(i)} className="mt-2 px-3 py-1 bg-red-500 text-white rounded">
-//                                 Delete
-//                             </button>
-//                         </div>
-//                     ))}
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default AdminMCQ;
-
-
-
-
-
-// import React, { useState, useEffect } from 'react';
-// import Navbar from '../../components/Navbar';
-
-// const AdminMCQ = () => {
-//     const [questions, setQuestions] = useState([]);
-//     const [newQuestion, setNewQuestion] = useState('');
-//     const [loading, setLoading] = useState(true);
-
-//     useEffect(() => {
-//         const fetchQuestions = async () => {
-//             try {
-//                 // ✅ Fix: Use authToken
-//                 const token = localStorage.getItem('authToken') || 
-//                               localStorage.getItem('token');
-                
-//                 const response = await fetch("http://localhost:3000/api/questions/mcq", {
-//                     headers: {
-//                         'Authorization': `Bearer ${token}`,
-//                         'Content-Type': 'application/json'
-//                     }
-//                 });
-                
-//                 if (!response.ok) {
-//                     throw new Error(`Failed to fetch: ${response.status}`);
-//                 }
-                
-//                 const data = await response.json();
-                
-//                 // ✅ Handle response format
-//                 if (data.success && data.questions) {
-//                     setQuestions(data.questions);
-//                 } else if (Array.isArray(data)) {
-//                     setQuestions(data);
-//                 } else {
-//                     setQuestions([]);
-//                 }
-                
-//             } catch (err) {
-//                 console.error('Error loading questions:', err);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         };
-        
-//         fetchQuestions();
-//     }, []);
-
-//     const addQuestion = async () => {
-//         if (!newQuestion.trim()) return;
-
-//         try {
-//             const token = localStorage.getItem('authToken') || 
-//                           localStorage.getItem('token');
-            
-//             const response = await fetch("http://localhost:3000/api/questions/mcq", {
-//                 method: "POST",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     'Authorization': `Bearer ${token}`
-//                 },
-//                 body: JSON.stringify({
-//                     question: newQuestion,
-//                     type: "mcq"
-//                 })
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error('Failed to add question');
-//             }
-
-//             const saved = await response.json();
-//             setQuestions(prev => [...prev, saved]);
-//             setNewQuestion('');
-//             setOptions(['', '', '', '']);
-//             alert('Question added successfully!');
-            
-//         } catch (err) {
-//             console.error('Error adding question:', err);
-//             alert('Failed to add question');
-//         }
-//     };
-
-//     const deleteQuestion = async (id) => {
-//         if (!window.confirm('Are you sure you want to delete this question?')) return;
-        
-//         try {
-//             const token = localStorage.getItem('authToken') || 
-//                           localStorage.getItem('token');
-            
-//             const response = await fetch(`http://localhost:3000/api/questions/mcq/${id}`, {
-//                 method: "DELETE",
-//                 headers: {
-//                     'Authorization': `Bearer ${token}`
-//                 }
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error('Failed to delete question');
-//             }
-
-//             setQuestions(prev => prev.filter(q => q.id !== id));
-//             alert('Question deleted successfully!');
-            
-//         } catch (err) {
-//             console.error('Error deleting question:', err);
-//             alert('Failed to delete question');
-//         }
-//     };
-
-//     if (loading) {
-//         return (
-//             <div className="min-h-screen bg-gray-100">
-//                 <Navbar />
-//                 <div className="container mx-auto p-4">
-//                     <p className="text-center py-12">Loading questions...</p>
-//                 </div>
-//             </div>
-//         );
-//     }
-
-//     return (
-//         <div className="min-h-screen bg-gray-100">
-//             <Navbar />
-//             <div className="container mx-auto p-4">
-//                 <h1 className="text-2xl font-bold mb-6">Admin -MCQ Questions</h1>
-                
-//                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-//                     <h2 className="text-xl font-semibold mb-4">Add New MCQ Question</h2>
-//                     <textarea
-//                         placeholder="Question"
-//                         value={newQuestion}
-//                         onChange={(e) => setNewQuestion(e.target.value)}
-//                         className="w-full p-3 border border-gray-300 rounded mb-4"
-//                         rows="4"
-//                     />
-//                     <button 
-//                         onClick={addQuestion} 
-//                         className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-//                         disabled={!newQuestion.trim()}
-//                     >
-//                         Add Question
-//                     </button>
-//                 </div>
-                
-//                 <div className="bg-white p-6 rounded-lg shadow-md">
-//                     <h2 className="text-xl font-semibold mb-4">Existing Questions ({questions.length})</h2>
-//                     {questions.length === 0 ? (
-//                         <p className="text-gray-500 text-center py-4">No questions yet</p>
-//                     ) : (
-//                         questions.map((q, i) => (
-//                             <div key={q.id || i} className="mb-4 p-4 border border-gray-200 rounded flex justify-between items-start">
-//                                 <div>
-//                                     <p className="font-medium">{q.question}</p>
-//                                     <p className="text-sm text-gray-500 mt-1">ID: {q.id || 'N/A'}</p>
-//                                 </div>
-//                                 <button 
-//                                     onClick={() => deleteQuestion(q.id)} 
-//                                     className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-//                                 >
-//                                     Delete
-//                                 </button>
-//                             </div>
-//                         ))
-//                     )}
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default AdminMCQ;
-
-
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
+import api from '../../services/api'; // ← Added
+import toast from 'react-hot-toast'; // ← Added
 
 const AdminMCQ = () => {
     const [subjects, setSubjects] = useState([]);
@@ -302,23 +17,9 @@ const AdminMCQ = () => {
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const token = localStorage.getItem('authToken') || 
-                              localStorage.getItem('token');
-                
-                const response = await fetch("http://localhost:3000/api/subjects", {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch subjects: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // Handle response format
+                const response = await api.get('/subjects'); // ← Changed
+                const data = response.data;
+
                 if (Array.isArray(data)) {
                     setSubjects(data);
                 } else if (data.success && Array.isArray(data.subjects)) {
@@ -328,14 +29,14 @@ const AdminMCQ = () => {
                 } else {
                     setSubjects(['mathematics', 'physics', 'chemistry']);
                 }
-                
             } catch (err) {
                 console.error('Error loading subjects:', err);
+                toast.error('Failed to load subjects');
             } finally {
                 setSubjectsLoading(false);
             }
         };
-        
+
         fetchSubjects();
     }, []);
 
@@ -351,34 +52,20 @@ const AdminMCQ = () => {
     const fetchQuestions = async (subject) => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch(`http://localhost:3000/api/questions/${subject}?type=mcq`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Failed to fetch: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            // Filter only MCQ questions
+            const response = await api.get(`/questions/${subject}?type=mcq`); // ← Changed
+            const data = response.data;
+
             let questionsArray = [];
             if (Array.isArray(data)) {
                 questionsArray = data.filter(q => q.type === 'mcq');
             } else if (data.success && Array.isArray(data.questions)) {
                 questionsArray = data.questions.filter(q => q.type === 'mcq');
             }
-            
+
             setQuestions(questionsArray);
-            
         } catch (err) {
             console.error('Error loading questions:', err);
+            toast.error('Failed to load questions');
             setQuestions([]);
         } finally {
             setLoading(false);
@@ -394,85 +81,56 @@ const AdminMCQ = () => {
 
     const addQuestion = async () => {
         if (!selectedSubject) {
-            alert('Please select a subject first');
+            toast.error('Please select a subject first');
             return;
         }
 
         if (!newQuestion.trim()) {
-            alert('Question text is required');
+            toast.error('Question text is required');
             return;
         }
 
         if (options.some(opt => !opt.trim())) {
-            alert('All MCQ options are required');
+            toast.error('All MCQ options are required');
             return;
         }
 
         if (!correctAnswer.trim()) {
-            alert('Please select a correct answer');
+            toast.error('Please select a correct answer');
             return;
         }
 
         try {
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch("http://localhost:3000/api/questions/mcq", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    subject: selectedSubject,
-                    question: newQuestion,
-                    options: options,
-                    correctAnswer: correctAnswer,
-                    type: "mcq"
-                })
+            const response = await api.post('/questions/mcq', { // ← Changed
+                subject: selectedSubject,
+                question: newQuestion,
+                options: options,
+                correctAnswer: correctAnswer,
+                type: "mcq"
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to add question');
-            }
-
-            const saved = await response.json();
+            const saved = response.data;
             setQuestions(prev => [...prev, saved]);
             setNewQuestion('');
             setOptions(['', '', '', '']);
             setCorrectAnswer('');
-            alert('MCQ added successfully!');
-            
+            toast.success('MCQ added successfully!');
         } catch (err) {
             console.error('Error adding question:', err);
-            alert('Failed to add question');
+            toast.error('Failed to add question');
         }
     };
 
     const deleteQuestion = async (id) => {
         if (!window.confirm('Are you sure you want to delete this question?')) return;
-        
+
         try {
-            const token = localStorage.getItem('authToken') || 
-                          localStorage.getItem('token');
-            
-            const response = await fetch(`http://localhost:3000/api/questions/mcq/${id}`, {
-                method: "DELETE",
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete question');
-            }
-
-            setQuestions(prev => prev.filter(q => q.id !== id));
-            alert('Question deleted successfully!');
-            
+            await api.delete(`/questions/mcq/${id}`); // ← Changed
+            setQuestions(questions.filter(q => q.id !== id));
+            toast.success('Question deleted successfully!');
         } catch (err) {
             console.error('Error deleting question:', err);
-            alert('Failed to delete question');
+            toast.error('Failed to delete question');
         }
     };
 
@@ -501,11 +159,11 @@ const AdminMCQ = () => {
             <Navbar />
             <div className="container mx-auto p-4 max-w-6xl">
                 <h1 className="text-2xl font-bold mb-6">Admin - MCQ Questions Management</h1>
-                
+
                 {/* Subject Selection Card */}
                 <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-4">Select Subject for MCQ Questions</h2>
-                    
+
                     {!selectedSubject ? (
                         <div>
                             <p className="text-gray-600 mb-4">Choose a subject to add/view MCQ questions:</p>
@@ -547,7 +205,7 @@ const AdminMCQ = () => {
                         <h2 className="text-xl font-semibold mb-4">
                             Add New MCQ to <span className="text-blue-600 capitalize">{selectedSubject.replace(/-/g, ' ')}</span>
                         </h2>
-                        
+
                         <div className="mb-4">
                             <label className="block text-gray-700 mb-2">Question:</label>
                             <textarea
@@ -563,8 +221,8 @@ const AdminMCQ = () => {
                             <label className="block text-gray-700 mb-2">Options:</label>
                             {options.map((opt, i) => (
                                 <div key={i} className="flex items-center mb-3">
-                                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded mr-3">
-                                        <span className="font-medium">{String.fromCharCode(65 + i)}</span>
+                                    <div className={`w-6 h-6 flex items-center justify-center rounded mr-2 ${correctAnswer === opt ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'}`}>
+                                        {String.fromCharCode(65 + i)}
                                     </div>
                                     <input
                                         type="text"
@@ -591,7 +249,7 @@ const AdminMCQ = () => {
                             </div>
                         )}
 
-                        <button 
+                        <button
                             onClick={addQuestion}
                             disabled={!newQuestion.trim() || !correctAnswer || options.some(opt => !opt.trim())}
                             className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -648,7 +306,7 @@ const AdminMCQ = () => {
                                                 )}
                                                 <p className="text-sm text-gray-500 mt-2">Subject: {q.subject || selectedSubject}</p>
                                             </div>
-                                            <button 
+                                            <button
                                                 onClick={() => deleteQuestion(q.id)}
                                                 className="ml-4 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
                                             >
